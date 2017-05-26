@@ -3,4 +3,4 @@
 
 library SegmentAnalytics;
 
-export 'src/SegmentAnalytics_base.dart';
+export 'src/analytics_base.dart';

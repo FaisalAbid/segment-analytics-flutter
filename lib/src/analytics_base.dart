@@ -1,7 +1,5 @@
-library analytics;
-
 import 'dart:async';
-import 'dart:convert';
+import 'dart:convert' show utf8, base64, json, Encoding;
 import 'package:http/http.dart';
 
 
@@ -21,19 +19,19 @@ class Analytics {
   }
 
   Analytics._internal(String segmentApiKey) {
-    writeKey = "Basic ${BASE64.encode(UTF8.encode("$segmentApiKey").toString().codeUnits)}";
+    writeKey = "Basic ${"$base64.encode(utf8.encode(segmentApiKey)).toString()"}";
   }
 
   void identify(String userID, Map properties) {
     Map payload = {"type": "identify", "traits": properties, "userId": userID, "context": defaultContext()};
-    client.postSilentMicrotask("$endpoint/identify", body: JSON.encode(payload));
+    client.postSilentMicrotask("$endpoint/identify", body: json.encode(payload));
   }
 
   void identifyIP(String userID, String ip) {
     Map context = defaultContext();
     context["ip"] = ip;
     Map payload = {"type": "identify", "userId": userID, "context": context};
-    client.postSilentMicrotask("$endpoint/identify", body: JSON.encode(payload));
+    client.postSilentMicrotask("$endpoint/identify", body: json.encode(payload));
   }
 
   trackRevenue(String userId, double value, String eventName) async {
@@ -59,7 +57,7 @@ class Analytics {
       "event": event,
       "properties": new Map.from(properties)
     };
-    client.postSilentMicrotask("$endpoint/track", body: JSON.encode(payload));
+    client.postSilentMicrotask("$endpoint/track", body: json.encode(payload));
   }
 
   Map defaultContext() {
@@ -78,6 +76,7 @@ class AnalyticsClient extends BaseClient {
   Future<StreamedResponse> send(BaseRequest request) {
     request.headers['Content-Type'] = "application/json";
     request.headers["Authorization"] = Analytics.writeKey;
+    print(request.headers);
     return _inner.send(request);
   }
 
